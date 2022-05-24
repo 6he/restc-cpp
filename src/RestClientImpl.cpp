@@ -357,7 +357,7 @@ public:
         LOCK_ALWAYS_;
         if (closed_ && pool_) {
             call_once(close_pool_once_, [&] {
-                RESTC_CPP_LOG_TRACE_("OnNoMoreWork: closing pool")
+                RESTC_CPP_LOG_TRACE_("OnNoMoreWork: closing pool");
                 pool_->Close();
                 pool_.reset();
             });
