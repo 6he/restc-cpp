@@ -250,7 +250,6 @@ public:
         ClearWork();
         if (!io_service_->stopped()) {
             io_service_->dispatch([this](){
-                LOCK_;
                 if (current_tasks_ == 0) {
                     OnNoMoreWork();
                 }
@@ -354,7 +353,7 @@ public:
 
     void OnNoMoreWork() {
         RESTC_CPP_LOG_TRACE_("OnNoMoreWork: enter");
-        LOCK_ALWAYS_;
+        LOCK_;
         if (closed_ && pool_) {
             call_once(close_pool_once_, [&] {
                 RESTC_CPP_LOG_TRACE_("OnNoMoreWork: closing pool");
@@ -384,7 +383,11 @@ private:
     boost::asio::io_service *io_service_ = nullptr;
     ConnectionPool::ptr_t pool_;
     unique_ptr<boost::asio::io_service::work> work_;
-    size_t current_tasks_ = 0;
+#ifdef RESTC_CPP_THREADED_CTX
+    atomic_size_t current_tasks_{0};
+#else
+    size_t current_tasks_{0};
+#endif
     bool closed_ = false;
     once_flag close_once_;
     std::vector<unique_ptr<thread>> threads_;
