@@ -586,12 +586,23 @@ private:
         writer_->Finish();
         writer_.reset();
 
+        RESTC_CPP_LOG_TRACE_("GetReply: writer is reset.");
+
         DataReader::ReadConfig cfg;
         cfg.msReadTimeout = properties_->recvTimeout;
         auto reply = ReplyImpl::Create(connection_, ctx, owner_, properties_,
                                        request_type_);
-        reply->StartReceiveFromServer(
-            DataReader::CreateIoReader(connection_, ctx, cfg));
+
+        RESTC_CPP_LOG_TRACE_("GetReply: Calling StartReceiveFromServer");
+        try {
+            reply->StartReceiveFromServer(
+                DataReader::CreateIoReader(connection_, ctx, cfg));
+        } catch (const exception& ex) {
+            RESTC_CPP_LOG_DEBUG_("GetReply: exception from StartReceiveFromServer: " << ex.what());
+            throw;
+        }
+
+        RESTC_CPP_LOG_TRACE_("GetReply: Returned from StartReceiveFromServer. code=" << reply->GetResponseCode());
 
         const auto http_code = reply->GetResponseCode();
         if (http_code == http_301 || http_code == http_302) {
@@ -600,10 +611,13 @@ private:
                 throw ProtocolException(
                     "No Location header in redirect reply");
             }
+            RESTC_CPP_LOG_TRACE_("GetReply: RedirectException. location=" << *redirect_location);
             throw RedirectException(http_code, *redirect_location, move(reply));
         }
 
+        RESTC_CPP_LOG_TRACE_("GetReply: Calling ValidateReply");
         ValidateReply(*reply);
+        RESTC_CPP_LOG_TRACE_("GetReply: returning from ValidateReply");
 
         /* Return the reply. At this time the reply headers and body
             * is returned. However, the body may or may not be
