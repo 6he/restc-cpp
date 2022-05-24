@@ -218,6 +218,7 @@ public:
 
         work_ = make_unique<boost::asio::io_service::work>(*io_service_);
 
+        RESTC_CPP_LOG_TRACE_("Starting " <<default_connection_properties_->threads << " worker thread(s)");
         for(size_t i = 0; i < default_connection_properties_->threads; ++i) {
             threads_.emplace_back(make_unique<thread>([i, this, &wait]() {
                 lock_guard<recursive_mutex> lock(*done_mutexes_.at(i));
@@ -236,6 +237,8 @@ public:
         for(auto& w : wait) {
             w.get_future().get();
         }
+
+        RESTC_CPP_LOG_TRACE_("All worker threads have started");
     }
 
 
@@ -350,15 +353,24 @@ public:
 #endif
 
     void OnNoMoreWork() {
+        RESTC_CPP_LOG_TRACE_("OnNoMoreWork: enter");
+        LOCK_ALWAYS_;
         if (closed_ && pool_) {
-            pool_->Close();
-            pool_.reset();
+            call_once(close_pool_once_, [&] {
+                RESTC_CPP_LOG_TRACE_("OnNoMoreWork: closing pool")
+                pool_->Close();
+                pool_.reset();
+            });
         }
         if (closed_ && ioservice_instance_) {
             if (!work_ && !io_service_->stopped()) {
-                io_service_->stop();
+                call_once(close_ioservice_once_, [&] {
+                    RESTC_CPP_LOG_TRACE_("OnNoMoreWork: Stopping ioservice");
+                    io_service_->stop();
+                });
             }
         }
+        RESTC_CPP_LOG_TRACE_("OnNoMoreWork: leave");
     }
 
 protected:
@@ -368,6 +380,7 @@ protected:
 
 private:
     Request::Properties::ptr_t default_connection_properties_ = make_shared<Request::Properties>();
+    unique_ptr<boost::asio::io_service> ioservice_instance_;
     boost::asio::io_service *io_service_ = nullptr;
     ConnectionPool::ptr_t pool_;
     unique_ptr<boost::asio::io_service::work> work_;
@@ -376,7 +389,9 @@ private:
     once_flag close_once_;
     std::vector<unique_ptr<thread>> threads_;
     std::vector<std::unique_ptr<recursive_mutex>> done_mutexes_;
-    unique_ptr<boost::asio::io_service> ioservice_instance_;
+    std::once_flag close_pool_once_;
+    std::once_flag close_ioservice_once_;
+
 
 #ifdef RESTC_CPP_WITH_TLS
     shared_ptr<boost::asio::ssl::context> tls_context_;

@@ -185,14 +185,17 @@ public:
     }
 
     void Close() override {
+        RESTC_CPP_LOG_TRACE_("ConnectionPoolImpl::Close: enter");
         if (!closed_) {
             call_once(close_once_, [this] {
-                closed_ = true;
+                RESTC_CPP_LOG_TRACE_("ConnectionPoolImpl::Close: closing *once*.");
                 LOCK_ALWAYS_;
+                closed_ = true;
                 cache_cleanup_timer_.cancel();
                 idle_.clear();
             });
         }
+        RESTC_CPP_LOG_TRACE_("ConnectionPoolImpl::Close: leave");
     }
 
     void StartTimer() {
@@ -209,7 +212,9 @@ private:
     }
 
     void OnCacheCleanup(const boost::system::error_code& error) {
+        RESTC_CPP_LOG_TRACE_("OnCacheCleanup: enter");
         if (closed_) {
+            RESTC_CPP_LOG_TRACE_("OnCacheCleanup: closed");
             return;
         }
 
@@ -218,7 +223,7 @@ private:
             return;
         }
 
-        RESTC_CPP_LOG_TRACE_("Cleaning cache...");
+        RESTC_CPP_LOG_TRACE_("OnCacheCleanup: Cleaning cache...");
 
         const auto now = std::chrono::steady_clock::now();
         {
@@ -242,7 +247,9 @@ private:
             }
         }
 
+        RESTC_CPP_LOG_TRACE_("OnCacheCleanup: schedule next");
         ScheduleNextCacheCleanup();
+        RESTC_CPP_LOG_TRACE_("OnCacheCleanup: leave");
     }
 
     void OnRelease(const Entry::ptr_t entry) {
@@ -307,6 +314,7 @@ private:
     }
 
     bool PurgeOldestIdleEntry() {
+        RESTC_CPP_LOG_TRACE_("PurgeOldestIdleEntry: enter");
         LOCK_ALWAYS_;
         auto oldest =  idle_.begin();
         for (auto it = idle_.begin(); it != idle_.end(); ++it) {
@@ -318,9 +326,11 @@ private:
         if (oldest != idle_.end()) {
             RESTC_CPP_LOG_TRACE_("LRU-Purging " << *oldest->second);
             idle_.erase(oldest);
+            RESTC_CPP_LOG_TRACE_("PurgeOldestIdleEntry: success");
             return true;
         }
 
+        RESTC_CPP_LOG_TRACE_("PurgeOldestIdleEntry: failed");
         return false;
     }
 
@@ -387,7 +397,7 @@ private:
     RestClient& owner_;
     multimap<Key, Entry::ptr_t> idle_;
     multimap<Key, std::weak_ptr<Entry>> in_use_;
-    std::queue<Entry> pending_;
+    //std::queue<Entry> pending_;
     const Request::Properties::ptr_t properties_;
     ConnectionWrapper::release_callback_t on_release_;
     boost::asio::deadline_timer cache_cleanup_timer_;
