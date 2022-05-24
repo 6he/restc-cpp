@@ -354,6 +354,11 @@ public:
     void OnNoMoreWork() {
         RESTC_CPP_LOG_TRACE_("OnNoMoreWork: enter");
         LOCK_;
+        if (current_tasks_ > 0) {
+            // Cannot close down quite yet.
+            RESTC_CPP_LOG_TRACE_("OnNoMoreWork: leaving - we have active tasks");
+            return;
+        }
         if (closed_ && pool_) {
             call_once(close_pool_once_, [&] {
                 RESTC_CPP_LOG_TRACE_("OnNoMoreWork: closing pool");
