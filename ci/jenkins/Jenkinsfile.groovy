@@ -10,6 +10,7 @@ pipeline {
         // Jenkinsfiles always runs in the sandbox.
         // For simplicity, I just put it here (I already wasted 3 hours on this)
         RESTC_CPP_TEST_DOCKER_ADDRESS="192.168.1.131"
+        CTEST_OUTPUT_ON_FAILURE=1
     }
 
     stages {
