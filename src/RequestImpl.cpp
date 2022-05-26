@@ -481,8 +481,8 @@ private:
                             << ", message: " << ex.what());
 
                         connection->GetSocket().GetSocket().close();
-                        break;
                     }
+                    break;
                 }
                 continue;
             }
