@@ -423,7 +423,7 @@ private:
                                 == prot_filter.end()) {
                             RESTC_CPP_LOG_TRACE_("Filtered out (protocol mismatch) local address: "
                                 << properties_->bindToLocalAddress);
-                            continue;
+                            break; // Break out of retry loop, re-enter endpoint loop
                         }
                     }
 
@@ -493,9 +493,9 @@ private:
 
                     connection->GetSocket().GetSocket().close();
                 }
-                break;
+
             } // retries
-        }
+        } // endpoints
 
         throw FailedToConnectException("Failed to connect (exhausted all options)");
     }
