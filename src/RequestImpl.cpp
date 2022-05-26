@@ -394,6 +394,11 @@ private:
         const decltype(address_it) addr_end;
 
         for(; address_it != addr_end; ++address_it) {
+            if (owner_.IsClosed()) {
+                RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect: The rest client is closed (at first lkoop). Aborting.");
+                throw FailedToConnectException("Failed to connect");
+            }
+
             const auto endpoint = address_it->endpoint();
 
             RESTC_CPP_LOG_TRACE_("Trying endpoint " << endpoint);
@@ -443,20 +448,43 @@ private:
                 auto timer = IoTimer::Create(timer_name,
                     properties_->connectTimeoutMs, connection);
 
-                try {
-                    connection->GetSocket().AsyncConnect(
-                        endpoint, address_it->host_name(),
-                        properties_->tcpNodelay, ctx.GetYield());
-                } catch(const exception& ex) {
-                    RESTC_CPP_LOG_WARN_("Connect to "
-                        << endpoint
-                        << " failed with exception type: "
-                        << typeid(ex).name()
-                        << ", message: " << ex.what());
+                for(size_t retries = 0;; ++retries) {
+                    if (owner_.IsClosed()) {
+                        RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect: The rest client is closed. Aborting.");
+                        throw FailedToConnectException("Failed to connect");
+                    }
+                    try {
+                        if (retries) {
+                            RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect: taking a nap");
+                            ctx.Sleep(50ms);
+                            RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect: Waking up. Will try to read from the socket now.");
+                        }
 
-                    connection->GetSocket().GetSocket().close();
-                    continue;
+                        connection->GetSocket().AsyncConnect(
+                            endpoint, address_it->host_name(),
+                            properties_->tcpNodelay, ctx.GetYield());
+                    } catch (const boost::system::system_error& ex) {
+                        if (ex.code() == boost::system::errc::resource_unavailable_try_again) {
+                            if ( retries < 16) {
+                                RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect:: Caught boost::system::system_error exception: " << ex.what()
+                                                     << ". I will continue the retry loop.");
+                                continue;
+                            }
+                        }
+                        RESTC_CPP_LOG_WARN_("RequestImpl::Connect:: Caught boost::system::system_error exception: " << ex.what());
+                        throw FailedToConnectException("Failed to connect");
+                    } catch(const exception& ex) {
+                        RESTC_CPP_LOG_WARN_("Connect to "
+                            << endpoint
+                            << " failed with exception type: "
+                            << typeid(ex).name()
+                            << ", message: " << ex.what());
+
+                        connection->GetSocket().GetSocket().close();
+                        break;
+                    }
                 }
+                continue;
             }
 
             return connection;

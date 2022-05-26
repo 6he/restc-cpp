@@ -424,6 +424,8 @@ public:
      */
     virtual void CloseWhenReady(bool wait = true) = 0;
 
+    virtual bool IsClosed() const noexcept = 0;
+
     /*! Factory */
     static std::unique_ptr<RestClient> Create();
 
@@ -453,6 +455,7 @@ public:
 
     static std::unique_ptr<RestClient>
         Create(boost::asio::io_service& ioservice);
+
 
     protected:
         virtual std::unique_ptr<DoneHandler> GetDoneHandler() = 0;

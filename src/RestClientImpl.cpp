@@ -246,6 +246,10 @@ public:
         return default_connection_properties_;
     }
 
+    bool IsClosed() const noexcept override {
+        return closed_;
+    }
+
     void CloseWhenReady(bool wait) override {
         ClearWork();
         if (!io_service_->stopped()) {

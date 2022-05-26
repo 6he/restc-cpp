@@ -35,7 +35,7 @@ public:
                 try {
                     if (retries) {
                         RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: taking a nap");
-                        ctx_.Sleep(100ms);
+                        ctx_.Sleep(50ms);
                         RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Waking up. Will try to read from the socket now.");
                     }
 
