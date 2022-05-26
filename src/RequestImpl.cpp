@@ -396,63 +396,65 @@ private:
         for(; address_it != addr_end; ++address_it) {
             if (owner_.IsClosed()) {
                 RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect: The rest client is closed (at first lkoop). Aborting.");
-                throw FailedToConnectException("Failed to connect");
+                throw FailedToConnectException("Failed to connect (closed)");
             }
 
             const auto endpoint = address_it->endpoint();
 
             RESTC_CPP_LOG_TRACE_("Trying endpoint " << endpoint);
 
-            // Get a connection from the pool
-            auto connection = owner_.GetConnectionPool()->GetConnection(
-                endpoint, protocol_type);
+            for(size_t retries = 0;; ++retries) {
+                // Get a connection from the pool
+                auto connection = owner_.GetConnectionPool()->GetConnection(
+                    endpoint, protocol_type);
 
-            // Connect if the connection is new.
-            if (!connection->GetSocket().IsOpen()) {
+                // Connect if the connection is new.
+                if (!connection->GetSocket().IsOpen()) {
 
-                RESTC_CPP_LOG_DEBUG_("Connecting to " << endpoint);
+                    RESTC_CPP_LOG_DEBUG_("Connecting to " << endpoint);
 
-                if (!properties_->bindToLocalAddress.empty()) {
+                    if (!properties_->bindToLocalAddress.empty()) {
 
-                    // Only connect outwards to protocols we can bind to
-                    if (!prot_filter.empty()) {
-                        if (std::find(prot_filter.begin(), prot_filter.end(), endpoint.protocol())
-                                == prot_filter.end()) {
-                            RESTC_CPP_LOG_TRACE_("Filtered out (protocol mismatch) local address: "
-                                << properties_->bindToLocalAddress);
-                            continue;
+                        // Only connect outwards to protocols we can bind to
+                        if (!prot_filter.empty()) {
+                            if (std::find(prot_filter.begin(), prot_filter.end(), endpoint.protocol())
+                                    == prot_filter.end()) {
+                                RESTC_CPP_LOG_TRACE_("Filtered out (protocol mismatch) local address: "
+                                    << properties_->bindToLocalAddress);
+                                continue;
+                            }
+                        }
+
+                        RESTC_CPP_LOG_TRACE_("Binding to local address: "
+                            << properties_->bindToLocalAddress);
+
+                        boost::system::error_code ec;
+                        auto local_ep = ToEp(properties_->bindToLocalAddress, endpoint.protocol(), ctx);
+                        auto& sck = connection->GetSocket().GetSocket();
+                        sck.open(local_ep.protocol());
+                        sck.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+                        sck.bind(local_ep, ec);
+
+                        if (ec) {
+                            RESTC_CPP_LOG_ERROR_("Failed to bind to local address '"
+                                << local_ep
+                                << "': " << ec.message());
+
+                            sck.close();
+                            throw RestcCppException{"Failed to bind to local address: "s
+                                                    + properties_->bindToLocalAddress};
                         }
                     }
 
-                    RESTC_CPP_LOG_TRACE_("Binding to local address: "
-                        << properties_->bindToLocalAddress);
 
-                    boost::system::error_code ec;
-                    auto local_ep = ToEp(properties_->bindToLocalAddress, endpoint.protocol(), ctx);
-                    auto& sck = connection->GetSocket().GetSocket();
-                    sck.open(local_ep.protocol());
-                    sck.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-                    sck.bind(local_ep, ec);
-
-                    if (ec) {
-                        RESTC_CPP_LOG_ERROR_("Failed to bind to local address '"
-                            << local_ep
-                            << "': " << ec.message());
-
-                        sck.close();
-                        throw RestcCppException{"Failed to bind to local address: "s
-                                                + properties_->bindToLocalAddress};
-                    }
-                }
-
-                auto timer = IoTimer::Create(timer_name,
-                    properties_->connectTimeoutMs, connection);
-
-                for(size_t retries = 0;; ++retries) {
                     if (owner_.IsClosed()) {
                         RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect: The rest client is closed. Aborting.");
-                        throw FailedToConnectException("Failed to connect");
+                        throw FailedToConnectException("Failed to connect (closed)");
                     }
+
+                    auto timer = IoTimer::Create(timer_name,
+                        properties_->connectTimeoutMs, connection);
+
                     try {
                         if (retries) {
                             RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect: taking a nap");
@@ -460,10 +462,15 @@ private:
                             RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect: Waking up. Will try to read from the socket now.");
                         }
 
+                        RESTC_CPP_LOG_TRACE_("RequestImpl::Connect: calling AsyncConnect --> " << endpoint);
                         connection->GetSocket().AsyncConnect(
                             endpoint, address_it->host_name(),
                             properties_->tcpNodelay, ctx.GetYield());
                     } catch (const boost::system::system_error& ex) {
+                        RESTC_CPP_LOG_TRACE_("RequestImpl::Connect:: Caught boost::system::system_error exception: " << ex.what()
+                                             << ". Will close connection " << *connection);
+                        connection->GetSocket().GetSocket().close();
+
                         if (ex.code() == boost::system::errc::resource_unavailable_try_again) {
                             if ( retries < 16) {
                                 RESTC_CPP_LOG_DEBUG_("RequestImpl::Connect:: Caught boost::system::system_error exception: " << ex.what()
@@ -483,14 +490,13 @@ private:
                         connection->GetSocket().GetSocket().close();
                     }
                     break;
-                }
-                continue;
-            }
+                } // was open
 
-            return connection;
+                return connection;
+            } // retries
         }
 
-        throw FailedToConnectException("Failed to connect");
+        throw FailedToConnectException("Failed to connect (exhausted all options)");
     }
 
     void SendRequestPayload(Context& /*ctx*/,
