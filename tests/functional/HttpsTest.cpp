@@ -53,7 +53,7 @@ TEST(TestHTTPS)
     shared_ptr<boost::asio::ssl::context> tls_ctx = make_shared<boost::asio::ssl::context>(boost::asio::ssl::context{ boost::asio::ssl::context::sslv23 });
     tls_ctx->set_options(boost::asio::ssl::context::default_workarounds
                         | boost::asio::ssl::context::no_sslv2
-                        //| boost::asio::ssl::context::no_sslv3
+                        | boost::asio::ssl::context::no_sslv3
                         | boost::asio::ssl::context::no_tlsv1_1
                         | boost::asio::ssl::context::single_dh_use);
 
