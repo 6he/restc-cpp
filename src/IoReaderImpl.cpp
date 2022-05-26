@@ -30,18 +30,27 @@ public:
                                         cfg_.msReadTimeout,
                                         conn);
 
-            for(size_t retries = 0; retries < 16; ++retries) {
+            for(size_t retries = 0;; ++retries) {
                 size_t bytes = 0;
                 try {
+                    if (retries) {
+                        RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: taking a nap");
+                        ctx_.Sleep(100ms);
+                        RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Waking up. Will try to read from the socket now.");
+                    }
+
                     bytes = conn->GetSocket().AsyncReadSome(
                         {buffer_.data(), buffer_.size()}, ctx_.GetYield());
                 } catch (const boost::system::system_error& ex) {
                     if (ex.code() == boost::system::errc::resource_unavailable_try_again) {
-                        RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Caught boost::system::system_error exception: " << ex.what()
-                                             << ". I will continue the retry loop.");
-                        continue;
+                        if ( retries < 16) {
+                            RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Caught boost::system::system_error exception: " << ex.what()
+                                                 << ". I will continue the retry loop.");
+                            continue;
+                        }
                     }
                     RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Caught boost::system::system_error exception: " << ex.what());
+                    throw;
                 } catch (const exception& ex) {
                     RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Caught exception: " << ex.what());
                     throw;
