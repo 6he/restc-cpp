@@ -29,13 +29,19 @@ public:
             auto timer = IoTimer::Create("IoReaderImpl",
                                         cfg_.msReadTimeout,
                                         conn);
-            const auto bytes = conn->GetSocket().AsyncReadSome(
-                {buffer_.data(), buffer_.size()}, ctx_.GetYield());
-
-            timer->Cancel();
+            size_t bytes = 0;
+            try {
+                bytes = conn->GetSocket().AsyncReadSome(
+                    {buffer_.data(), buffer_.size()}, ctx_.GetYield());
+            } catch (const exception& ex) {
+                RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Caught exception: " << ex.what());
+                throw;
+            }
 
             RESTC_CPP_LOG_TRACE_("Read #" << bytes
                 << " bytes from " << conn);
+
+            timer->Cancel();
             return {buffer_.data(), bytes};
         }
 
