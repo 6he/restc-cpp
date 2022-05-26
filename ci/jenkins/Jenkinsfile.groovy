@@ -49,7 +49,7 @@ pipeline {
 //                                 sh 'cd build && ctest --no-compress-output -T Test'
 //                             } catch (exc) {
 //                                 echo 'Testing failed'
-//                                 currentBuild.result = 'FAILURE'
+//                                 result = 'UNSTABLE'
 //                             }
 //                         }
 //                     }
@@ -79,7 +79,7 @@ pipeline {
 //                                 sh 'cd build && ctest --no-compress-output -T Test'
 //                             } catch (exc) {
 //                                 echo 'Testing failed'
-//                                 currentBuild.result = 'FAILURE'
+//                                 result = 'UNSTABLE'
 //                             }
 //                         }
 //                     }
@@ -112,7 +112,8 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
+                                
                             }
                         }
                     }
@@ -145,7 +146,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -178,7 +179,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -211,7 +212,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -244,7 +245,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -277,7 +278,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -310,7 +311,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -343,7 +344,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -376,7 +377,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -409,7 +410,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -443,7 +444,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -476,7 +477,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -510,7 +511,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -543,7 +544,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -576,7 +577,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -609,7 +610,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -638,7 +639,7 @@ pipeline {
 //                                 sh 'cd build && ctest --no-compress-output -T Test'
 //                             } catch (exc) {
 //                                 echo 'Testing failed'
-//                                 currentBuild.result = 'FAILURE'
+//                                 result = 'UNSTABLE'
 //                             }
 //                         }
 //                     }
@@ -667,7 +668,7 @@ pipeline {
 //                                 sh 'cd build && ctest --no-compress-output -T Test'
 //                             } catch (exc) {
 //                                 echo 'Testing failed'
-//                                 currentBuild.result = 'FAILURE'
+//                                 result = 'UNSTABLE'
 //                             }
 //                         }
 //                     }
@@ -710,7 +711,7 @@ pipeline {
                                 '''
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
@@ -753,7 +754,7 @@ pipeline {
                                 '''
                             } catch (exc) {
                                 echo 'Testing failed'
-                                currentBuild.result = 'FAILURE'
+                                result = 'UNSTABLE'
                             }
                         }
                     }
