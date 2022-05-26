@@ -49,7 +49,7 @@ pipeline {
 //                                 sh 'cd build && ctest --no-compress-output -T Test'
 //                             } catch (exc) {
 //                                 echo 'Testing failed'
-//                                 result = 'UNSTABLE'
+//                                 unstable(message: "${STAGE_NAME} is unstable")
 //                             }
 //                         }
 //                     }
@@ -79,7 +79,7 @@ pipeline {
 //                                 sh 'cd build && ctest --no-compress-output -T Test'
 //                             } catch (exc) {
 //                                 echo 'Testing failed'
-//                                 result = 'UNSTABLE'
+//                                 unstable(message: "${STAGE_NAME} is unstable")
 //                             }
 //                         }
 //                     }
@@ -112,7 +112,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                                 
                             }
                         }
@@ -146,7 +146,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -179,7 +179,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -212,7 +212,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -245,7 +245,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -278,7 +278,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -311,7 +311,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -344,7 +344,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -377,7 +377,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -410,7 +410,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -444,7 +444,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -477,7 +477,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -511,7 +511,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -544,7 +544,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -577,7 +577,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -610,7 +610,7 @@ pipeline {
                                 sh 'cd build && ctest --no-compress-output -T Test'
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -639,7 +639,7 @@ pipeline {
 //                                 sh 'cd build && ctest --no-compress-output -T Test'
 //                             } catch (exc) {
 //                                 echo 'Testing failed'
-//                                 result = 'UNSTABLE'
+//                                 unstable(message: "${STAGE_NAME} is unstable")
 //                             }
 //                         }
 //                     }
@@ -668,7 +668,7 @@ pipeline {
 //                                 sh 'cd build && ctest --no-compress-output -T Test'
 //                             } catch (exc) {
 //                                 echo 'Testing failed'
-//                                 result = 'UNSTABLE'
+//                                 unstable(message: "${STAGE_NAME} is unstable")
 //                             }
 //                         }
 //                     }
@@ -711,7 +711,7 @@ pipeline {
                                 '''
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
@@ -754,7 +754,7 @@ pipeline {
                                 '''
                             } catch (exc) {
                                 echo 'Testing failed'
-                                result = 'UNSTABLE'
+                                unstable(message: "${STAGE_NAME} is unstable")
                             }
                         }
                     }
