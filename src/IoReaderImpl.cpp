@@ -29,22 +29,33 @@ public:
             auto timer = IoTimer::Create("IoReaderImpl",
                                         cfg_.msReadTimeout,
                                         conn);
-            size_t bytes = 0;
-            try {
-                bytes = conn->GetSocket().AsyncReadSome(
-                    {buffer_.data(), buffer_.size()}, ctx_.GetYield());
-            } catch (const exception& ex) {
-                RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Caught exception: " << ex.what());
-                throw;
+
+            for(size_t retries = 0; retries < 16; ++retries) {
+                size_t bytes = 0;
+                try {
+                    bytes = conn->GetSocket().AsyncReadSome(
+                        {buffer_.data(), buffer_.size()}, ctx_.GetYield());
+                } catch (const boost::system::system_error& ex) {
+                    if (ex.code() == boost::system::errc::resource_unavailable_try_again) {
+                        RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Caught boost::system::system_error exception: " << ex.what()
+                                             << ". I will continue the retry loop.");
+                        continue;
+                    }
+                    RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Caught boost::system::system_error exception: " << ex.what());
+                } catch (const exception& ex) {
+                    RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Caught exception: " << ex.what());
+                    throw;
+                }
+
+                RESTC_CPP_LOG_TRACE_("Read #" << bytes
+                    << " bytes from " << conn);
+
+                timer->Cancel();
+                return {buffer_.data(), bytes};
             }
-
-            RESTC_CPP_LOG_TRACE_("Read #" << bytes
-                << " bytes from " << conn);
-
-            timer->Cancel();
-            return {buffer_.data(), bytes};
         }
 
+        RESTC_CPP_LOG_DEBUG_("IoReaderImpl::ReadSome: Reached outer scope. Timed out?");
         throw ObjectExpiredException("Connection expired");
     }
 
