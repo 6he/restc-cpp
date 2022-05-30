@@ -242,7 +242,7 @@ pipeline {
                         echo 'Getting ready to run tests'
                         script {
                             try {
-                                sh 'cd build && ctest --no-compress-output -T Test'
+                                sh 'cd build && ctest -E HTTPS_FUNCTIONAL_TESTS --no-compress-output -T Test'
                             } catch (exc) {
                                 
                                 unstable(message: "${STAGE_NAME} - Testing failed")
@@ -275,7 +275,7 @@ pipeline {
                         echo 'Getting ready to run tests'
                         script {
                             try {
-                                sh 'cd build && ctest --no-compress-output -T Test'
+                                sh 'cd build && ctest -E HTTPS_FUNCTIONAL_TESTS --no-compress-output -T Test'
                             } catch (exc) {
                                 
                                 unstable(message: "${STAGE_NAME} - Testing failed")
@@ -308,7 +308,7 @@ pipeline {
                         echo 'Getting ready to run tests'
                         script {
                             try {
-                                sh 'cd build && ctest --no-compress-output -T Test'
+                                sh 'cd build && ctest -E HTTPS_FUNCTIONAL_TESTS --no-compress-output -T Test'
                             } catch (exc) {
                                 
                                 unstable(message: "${STAGE_NAME} - Testing failed")
@@ -341,7 +341,7 @@ pipeline {
                         echo 'Getting ready to run tests'
                         script {
                             try {
-                                sh 'cd build && ctest --no-compress-output -T Test'
+                                sh 'cd build && ctest -E HTTPS_FUNCTIONAL_TESTS --no-compress-output -T Test'
                             } catch (exc) {
                                 
                                 unstable(message: "${STAGE_NAME} - Testing failed")
