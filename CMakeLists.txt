@@ -22,9 +22,9 @@ endif()
 
 include(cmake_scripts/external-projects.cmake)
 
-if (EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    message(STATUS "Using conan configuration: ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+    message(STATUS "Using conan configuration: ${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake")
+    include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup()
 endif()
 
@@ -143,7 +143,7 @@ macro(SET_CPP_STANDARD target)
 endmacro(SET_CPP_STANDARD)
 
 # We create a configuration file so that other code that include our header files gets the correct configuration.
-CONFIGURE_FILE(config.h.template ${CMAKE_BINARY_DIR}/generated-include/${PROJECT_NAME}/config.h)
+CONFIGURE_FILE(config.h.template ${CMAKE_CURRENT_BINARY_DIR}/generated-include/${PROJECT_NAME}/config.h)
 
 set(ACTUAL_SOURCES
     src/ChunkedReaderImpl.cpp
@@ -186,8 +186,8 @@ add_library(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_OUTPUT_NAME restc-cppD)
 target_include_directories(${PROJECT_NAME}
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/generated-include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated-include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
 
@@ -266,6 +266,7 @@ if (NOT EMBEDDED_RESTC_CPP)
 
     target_include_directories(${PROJECT_NAME}
         PUBLIC
+            $<BUILD_INTERFACE:${EXTERNAL_RAPIDJSON_INCLUDE_DIR}>
             $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIR}>
             $<BUILD_INTERFACE:${ZLIB_INCLUDE_DIR}/build>
             $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>
@@ -274,7 +275,7 @@ if (NOT EMBEDDED_RESTC_CPP)
 endif()
 
 include(cmake_scripts/install.cmake)
-install(DIRECTORY ${CMAKE_BINARY_DIR}/generated-include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated-include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if (RESTC_CPP_WITH_UNIT_TESTS OR RESTC_CPP_WITH_FUNCTIONALT_TESTS)
     enable_testing()

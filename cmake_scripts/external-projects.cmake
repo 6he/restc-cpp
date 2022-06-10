@@ -21,7 +21,7 @@ ExternalProject_Add(
     LOG_INSTALL ON
     )
 
-set(EXTERNAL_RAPIDJSON_INCLUDE_DIR ${EXTERNAL_PROJECTS_PREFIX}/src/externalRapidJson/include/rapidjson)
+set(EXTERNAL_RAPIDJSON_INCLUDE_DIR ${EXTERNAL_PROJECTS_PREFIX}/src/externalRapidJson/include)
 
 ExternalProject_Add(
     externalLest
@@ -45,7 +45,7 @@ ExternalProject_Add(externalLogfault
 message(STATUS "EXTERNAL_RAPIDJSON_INCLUDE_DIR: ${EXTERNAL_RAPIDJSON_INCLUDE_DIR}")
 
 if (INSTALL_RAPIDJSON_HEADERS)
-    install(DIRECTORY ${EXTERNAL_RAPIDJSON_INCLUDE_DIR} DESTINATION include)
+    install(DIRECTORY "${EXTERNAL_RAPIDJSON_INCLUDE_DIR}/rapidjson" DESTINATION include)
 endif()
 
 include_directories(
