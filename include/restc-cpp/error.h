@@ -23,6 +23,7 @@ struct RequestFailedWithErrorException : public RestcCppException {
     }
 
     const Reply::HttpResponse http_response;
+    std::string body;
 };
 
 struct HttpAuthenticationException: public RequestFailedWithErrorException {

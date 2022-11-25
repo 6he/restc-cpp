@@ -940,7 +940,12 @@ private:
 
         if (properties_->throwOnHttpError) {
             RESTC_CPP_LOG_TRACE_("GetReply: Calling ValidateReply");
-            ValidateReply(*reply);
+            try {
+                ValidateReply(*reply);
+            } catch (RequestFailedWithErrorException& error) {
+                error.body = reply->GetBodyAsString();
+                throw;
+            }
             RESTC_CPP_LOG_TRACE_("GetReply: returning from ValidateReply");
         }
 
